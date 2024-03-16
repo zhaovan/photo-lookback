@@ -6,9 +6,11 @@ function App() {
   const numCrops = 4;
   const [images, setImages] = useState([0, 0, 0, 0]);
   const [frozen, setFrozen] = useState([false, false, false, false]);
+  const [foundImages, setFoundImages] = useState([]);
+  const [imageFound, setImageFound] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const timeout = setInterval(() => {
       const newArray = [...images];
       for (let i = 0; i < numCrops; i++) {
         if (frozen[i]) {
@@ -17,6 +19,17 @@ function App() {
         const randNum = Math.round(Math.random() * numImages);
 
         newArray[i] = randNum;
+      }
+
+      const oneImage = images.every((val) => val === images[0]);
+      if (oneImage) {
+        const newFoundImages = [...foundImages, images[0]];
+        setImageFound(true);
+        setFoundImages(newFoundImages);
+
+        setTimeout(() => {
+          setImageFound(false);
+        }, 4000);
       }
       setImages(newArray);
     }, 1000);
@@ -31,7 +44,8 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="container">
+      {imageFound && <div className="light-flash" />}
       <div className="image-container">
         {images.map((_, idx) => {
           return (
@@ -44,6 +58,24 @@ function App() {
           );
         })}
       </div>
+
+      {foundImages && (
+        <div>
+          <h1 className="header-text">Your photo album so far...</h1>
+          <div className="found-image-container">
+            {foundImages.map((imageIdx, idx) => {
+              return (
+                <img
+                  key={idx}
+                  src={`./images/img${imageIdx}.jpg`}
+                  alt=""
+                  className="found-image"
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
